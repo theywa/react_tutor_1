@@ -4,10 +4,10 @@ import AddItem from "./AddItem";
 import Content from "./Content";
 import Footer from "./Footer";
 import { useEffect, useState } from "react";
-import apiRequest from "./apiRequest";
+// import apiRequest from "./apiRequest";
 
 function App() {
-  const API_URL = "http://localhost:3500/items";
+  // const API_URL = "http://localhost:3500/items";
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState();
   const [search, setSearch] = useState("");
