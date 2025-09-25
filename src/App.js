@@ -14,12 +14,49 @@ function App() {
   const [fetchError, setFetchError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const localItems = [
+    {
+      id: "1",
+      checked: false,
+      item: "Almonds, Unsalted, in the blue bag",
+    },
+    {
+      id: "2",
+      checked: true,
+      item: "Pizza",
+    },
+    {
+      id: "3",
+      checked: false,
+      item: "Bread",
+    },
+    {
+      id: "4",
+      checked: false,
+      item: "Cookies",
+    },
+    {
+      id: "5",
+      checked: false,
+      item: "Cake",
+    },
+  ];
+  if (
+    !localStorage.getItem("shoppinglist") ||
+    localItems.length > JSON.parse(localStorage.getItem("shoppinglist")).length
+  ) {
+    localStorage.setItem("shoppinglist", JSON.stringify(localItems));
+  }
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw Error("Did not receive expected data");
-        const listItems = await response.json();
+        // const response = await fetch(API_URL);
+        // if (!response.ok) throw Error("Did not receive expected data");
+        // const listItems = await response.json();
+        const listItems = localStorage.getItem("shoppinglist")
+          ? JSON.parse(localStorage.getItem("shoppinglist"))
+          : [];
         setItems(listItems);
         setFetchError(null);
       } catch (err) {
@@ -34,9 +71,10 @@ function App() {
         await fetchItems();
       })();
     }, 2000);
-  }, []);
+  }, [items]);
 
   const setAndSaveItems = (listItems) => {
+    localStorage.setItem("shoppinglist", JSON.stringify(listItems));
     setItems(listItems);
   };
 
@@ -52,19 +90,19 @@ function App() {
     setAndSaveItems(listItems);
     setNewItem("");
 
-    const postOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newItem),
-    };
-    const result = await apiRequest(API_URL, postOptions);
-    if (result) {
-      setFetchError(result);
-    } else {
-      console.log("New item added:", newItem);
-    }
+    // const postOptions = {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(newItem),
+    // };
+    // const result = await apiRequest(API_URL, postOptions);
+    // if (result) {
+    //   setFetchError(result);
+    // } else {
+    //   console.log("New item added:", newItem);
+    // }
   };
 
   const handleCheck = async (id) => {
@@ -74,37 +112,37 @@ function App() {
       }
       return item;
     });
-    setItems(listItems);
+    setAndSaveItems(listItems);
 
-    const updatedItem = listItems.find((item) => item.id === id);
-    const updateOptions = {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ checked: updatedItem.checked }),
-    };
+    // const updatedItem = listItems.find((item) => item.id === id);
+    // const updateOptions = {
+    //   method: "PATCH",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ checked: updatedItem.checked }),
+    // };
 
-    const result = await apiRequest(`${API_URL}/${id}`, updateOptions);
-    if (result) {
-      setFetchError(result);
-    } else {
-      console.log(`Item with id ${id} updated`, updatedItem);
-    }
+    // const result = await apiRequest(`${API_URL}/${id}`, updateOptions);
+    // if (result) {
+    //   setFetchError(result);
+    // } else {
+    //   console.log(`Item with id ${id} updated`, updatedItem);
+    // }
   };
 
   const handleDelete = async (id) => {
     const listItems = items.filter((item) => item.id !== id);
-    setItems(listItems);
-    const deleteOptions = {
-      method: "DELETE",
-    };
-    const result = await apiRequest(`${API_URL}/${id}`, deleteOptions);
-    if (result) {
-      setFetchError(result);
-    } else {
-      console.log(`Item with id ${id} deleted`);
-    }
+    setAndSaveItems(listItems);
+    // const deleteOptions = {
+    //   method: "DELETE",
+    // };
+    // const result = await apiRequest(`${API_URL}/${id}`, deleteOptions);
+    // if (result) {
+    //   setFetchError(result);
+    // } else {
+    //   console.log(`Item with id ${id} deleted`);
+    // }
   };
 
   const handleSubmit = (e) => {
